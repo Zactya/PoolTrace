@@ -1,0 +1,155 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "loan_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "title": "Loan Id",
+      "type": "string"
+    },
+    "pool_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "title": "Pool Id",
+      "type": "string"
+    },
+    "period": {
+      "format": "date",
+      "title": "Period",
+      "type": "string"
+    },
+    "beginning_balance": {
+      "anyOf": [
+        {
+          "exclusiveMinimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "title": "Beginning Balance"
+    },
+    "ending_balance": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "title": "Ending Balance"
+    },
+    "scheduled_principal": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "title": "Scheduled Principal"
+    },
+    "prepayment": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "title": "Prepayment"
+    },
+    "other_reduction": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "default": "0",
+      "title": "Other Reduction"
+    },
+    "gross_rate": {
+      "maximum": 0.3,
+      "minimum": 0,
+      "title": "Gross Rate",
+      "type": "number"
+    },
+    "net_rate": {
+      "maximum": 0.3,
+      "minimum": 0,
+      "title": "Net Rate",
+      "type": "number"
+    },
+    "remaining_months": {
+      "maximum": 480,
+      "minimum": 1,
+      "title": "Remaining Months",
+      "type": "integer"
+    },
+    "age_months": {
+      "maximum": 600,
+      "minimum": 0,
+      "title": "Age Months",
+      "type": "integer"
+    },
+    "refinance_rate": {
+      "maximum": 0.3,
+      "minimum": 0,
+      "title": "Refinance Rate",
+      "type": "number"
+    },
+    "event": {
+      "default": "active",
+      "enum": [
+        "active",
+        "prepaid",
+        "liquidated",
+        "repurchased"
+      ],
+      "title": "Event",
+      "type": "string"
+    },
+    "provenance": {
+      "default": "user_supplied",
+      "enum": [
+        "synthetic",
+        "user_supplied"
+      ],
+      "title": "Provenance",
+      "type": "string"
+    }
+  },
+  "required": [
+    "loan_id",
+    "pool_id",
+    "period",
+    "beginning_balance",
+    "ending_balance",
+    "scheduled_principal",
+    "prepayment",
+    "gross_rate",
+    "net_rate",
+    "remaining_months",
+    "age_months",
+    "refinance_rate"
+  ],
+  "title": "LoanMonth",
+  "type": "object"
+}

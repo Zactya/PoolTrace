@@ -1,0 +1,37 @@
+{
+  "actual_execution_time": "2026-09-30T16:19:28.173758Z",
+  "data": "deterministic synthetic fixtures; not issuer or vendor validation",
+  "initial_accepted": 1727,
+  "initial_quarantined": 1,
+  "reimport_changed": 0,
+  "initial_coverage_findings": 1,
+  "backfill_changed": 1,
+  "final_coverage_findings": 0,
+  "correction_versions": 1,
+  "historical_prepayment_delta": 1750.0,
+  "reconciliation": {
+    "pool_id": "DEMO-ATLAS",
+    "compared": 3,
+    "not_comparable": 0,
+    "breaks": [
+      {
+        "metric": "price",
+        "delta": 2.0283711195767324,
+        "classification": "assumptions_explained"
+      },
+      {
+        "metric": "wal",
+        "delta": 1.828574206230697,
+        "classification": "assumptions_explained"
+      },
+      {
+        "metric": "duration",
+        "delta": 1.1610466201450302,
+        "classification": "assumptions_explained"
+      }
+    ]
+  },
+  "events": 9,
+  "current_rows": 1728,
+  "versioned_rows": 1729
+}

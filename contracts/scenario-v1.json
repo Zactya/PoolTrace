@@ -1,0 +1,49 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "cpr": {
+      "default": 0.08,
+      "maximum": 0.8,
+      "minimum": 0,
+      "title": "Cpr",
+      "type": "number"
+    },
+    "discount_rate": {
+      "default": 0.045,
+      "maximum": 0.25,
+      "minimum": 0,
+      "title": "Discount Rate",
+      "type": "number"
+    },
+    "market_price": {
+      "default": 100.0,
+      "exclusiveMinimum": 20,
+      "maximum": 200,
+      "title": "Market Price",
+      "type": "number"
+    },
+    "volatility": {
+      "default": 0.01,
+      "maximum": 0.08,
+      "minimum": 0,
+      "title": "Volatility",
+      "type": "number"
+    },
+    "paths": {
+      "default": 128,
+      "maximum": 512,
+      "minimum": 32,
+      "title": "Paths",
+      "type": "integer"
+    },
+    "seed": {
+      "default": 17,
+      "maximum": 4294967295,
+      "minimum": 0,
+      "title": "Seed",
+      "type": "integer"
+    }
+  },
+  "title": "Scenario",
+  "type": "object"
+}

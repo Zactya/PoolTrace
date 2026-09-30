@@ -1,0 +1,88 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "pool_id": {
+      "title": "Pool Id",
+      "type": "string"
+    },
+    "source": {
+      "maxLength": 100,
+      "minLength": 1,
+      "title": "Source",
+      "type": "string"
+    },
+    "as_of": {
+      "format": "date",
+      "title": "As Of",
+      "type": "string"
+    },
+    "price": {
+      "exclusiveMinimum": 0,
+      "maximum": 300,
+      "title": "Price",
+      "type": "number"
+    },
+    "wal": {
+      "maximum": 50,
+      "minimum": 0,
+      "title": "Wal",
+      "type": "number"
+    },
+    "duration": {
+      "maximum": 100,
+      "minimum": -100,
+      "title": "Duration",
+      "type": "number"
+    },
+    "oas_bps": {
+      "anyOf": [
+        {
+          "maximum": 5000,
+          "minimum": -5000,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Oas Bps"
+    },
+    "cpr": {
+      "maximum": 0.8,
+      "minimum": 0,
+      "title": "Cpr",
+      "type": "number"
+    },
+    "discount_rate": {
+      "maximum": 0.25,
+      "minimum": 0,
+      "title": "Discount Rate",
+      "type": "number"
+    },
+    "conventions": {
+      "default": "monthly-net-coupon;current-balance;flat-continuous;no-accrual",
+      "maxLength": 300,
+      "title": "Conventions",
+      "type": "string"
+    },
+    "duration_type": {
+      "default": "fixed_cashflow_parallel_rate",
+      "maxLength": 80,
+      "title": "Duration Type",
+      "type": "string"
+    }
+  },
+  "required": [
+    "pool_id",
+    "source",
+    "as_of",
+    "price",
+    "wal",
+    "duration",
+    "cpr",
+    "discount_rate"
+  ],
+  "title": "ReferenceRequest",
+  "type": "object"
+}

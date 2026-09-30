@@ -1,0 +1,25 @@
+name: Financial and data invariants
+on: [push, pull_request]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.10', '3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: pip install -r requirements-lock.txt
+      - run: pip install -e '.[test]' --no-deps
+      - run: pytest -q
+        env:
+          PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      - run: node --check src/pooltrace/web/app.js
+      - run: python scripts/export_contracts.py
+      - run: git diff --exit-code -- contracts
+      - run: python scripts/demo_evidence.py

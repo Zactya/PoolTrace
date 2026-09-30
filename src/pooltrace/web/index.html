@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>PoolTrace — Mortgage Operations</title>
+    <meta
+      name="description"
+      content="Mortgage cashflows, point-in-time data and reconciliation in one local workbench."
+    />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/assets/style.css" />
+    <script src="/assets/app.js" defer></script>
+  </head>
+  <body>
+    <aside class="sidebar">
+      <a class="brand" href="/"
+        ><span class="brand-mark">P<span></span></span
+        ><span>PoolTrace<small>MORTGAGE OPERATIONS</small></span></a
+      >
+      <div class="workspace-label">WORKSPACE <span>LOCAL</span></div>
+      <nav aria-label="Main navigation" id="navigation">
+        <button class="active" data-view="overview">
+          <span>◫</span> Overview
+        </button>
+        <button data-view="cashflows"><span>≋</span> Cashflow lab</button>
+        <button data-view="breaks">
+          <span>⊞</span> Reconciliation <b id="break-count">0</b>
+        </button>
+        <button data-view="timeline"><span>◷</span> Time machine</button>
+        <button data-view="prepayment"><span>⌁</span> Prepayment model</button>
+        <button data-view="ingestion"><span>⇥</span> Data & quality</button>
+        <button data-view="integrations"><span>⌘</span> Integrations</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <span class="status-dot"></span> Local research environment
+        <p>Reproducible by design.<br />Every number has a history.</p>
+        <a href="/docs" target="_blank" rel="noopener">API reference ↗</a
+        ><small>POOLTRACE / 0.1.0</small>
+      </div>
+    </aside>
+    <main>
+      <header class="topbar">
+        <div>
+          <span class="breadcrumb">WORKSPACE</span><span class="slash">/</span
+          ><span id="view-label">Overview</span>
+        </div>
+        <div class="topbar-right">
+          <span id="data-badge" class="badge">NO DATA LOADED</span
+          ><button class="icon-button" id="refresh" aria-label="Refresh data">
+            ↻</button
+          ><span class="avatar">AS</span>
+        </div>
+      </header>
+      <div class="page">
+        <div class="page-heading">
+          <div>
+            <div class="eyebrow">MORTGAGE DATA INTELLIGENCE</div>
+            <h1 id="page-title">The whole pool. Every detail.</h1>
+            <p id="page-subtitle">
+              Cashflows, exceptions and the evidence behind them.
+            </p>
+          </div>
+          <div class="heading-actions">
+            <button class="button secondary" id="seed-button">
+              Load synthetic demo</button
+            ><button class="button primary" id="reconcile-all">
+              Run reconciliation
+            </button>
+          </div>
+        </div>
+        <div class="notice" id="provenance-notice">
+          <span>◈</span>
+          <span
+            >Research workspace. Demo records are synthetic; no commercial data
+            connection is active.</span
+          ><span class="notice-end">EVIDENCE FIRST</span>
+        </div>
+        <section id="content" aria-live="polite">
+          <div class="empty">Loading workspace…</div>
+        </section>
+        <footer>
+          <span>PoolTrace · Data → Cashflows → Evidence</span
+          ><span id="last-update">Local workspace</span>
+        </footer>
+      </div>
+    </main>
+    <div id="toast" class="toast" role="status" hidden></div>
+    <dialog id="break-dialog">
+      <form id="break-form">
+        <div class="eyebrow">EXCEPTION WORKFLOW</div>
+        <h2>Review a break</h2>
+        <div id="break-evidence"></div>
+        <label
+          >Owner<input
+            id="break-owner"
+            required
+            maxlength="80"
+            placeholder="Analyst name" /></label
+        ><label
+          >Status<select id="break-status">
+            <option value="open">Open</option>
+            <option value="investigating">Investigating</option>
+            <option value="resolved">Resolved</option>
+          </select></label
+        ><label
+          >Evidence / resolution note<textarea
+            id="break-note"
+            required
+            minlength="3"
+            maxlength="1000"
+            rows="3"
+          ></textarea>
+        </label>
+        <div class="dialog-actions">
+          <button type="button" id="close-dialog" class="button secondary">
+            Cancel</button
+          ><button class="button primary" type="submit">Save review</button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>

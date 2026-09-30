@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pooltrace"
+version = "0.1.0"
+description = "Reproducible mortgage data, cashflow and reconciliation workbench"
+requires-python = ">=3.10"
+dependencies = ["fastapi==0.121.3", "uvicorn==0.38.0", "numpy==2.2.6", "pydantic==2.11.10"]
+
+[project.optional-dependencies]
+test = ["pytest==9.0.2", "httpx==0.28.1"]
+
+[project.scripts]
+pooltrace = "pooltrace.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+pooltrace = ["web/*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
