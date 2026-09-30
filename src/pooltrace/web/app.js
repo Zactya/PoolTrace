@@ -57,7 +57,7 @@ const titles = {
   ],
   integrations: [
     "Built to connect.",
-    "Versioned contracts and a durable event log for your systems.",
+    "Import reference data, export results and track integration activity.",
   ],
 };
 async function api(path, method = "GET", body) {
@@ -74,6 +74,14 @@ async function api(path, method = "GET", body) {
     );
   }
   return r.json();
+}
+function validationMessage(reason) {
+  return String(reason ?? "")
+    .split("\n")
+    .filter((line) => !/^\s*(?:\d+ validation errors? for |For further information visit )/.test(line))
+    .map((line) => line.replace(/\s*\[type=[\s\S]*$/, "").replace(/^\s*Value error, /, "").trim())
+    .filter(Boolean)
+    .join(" · ");
 }
 function toast(message, error = false) {
   const t = $("#toast");
@@ -166,7 +174,7 @@ function bindPool() {
     };
 }
 function empty() {
-  return `<div class="empty"><h2>Your research workspace is ready.</h2><p>Load the synthetic demo to explore 72 loans across three pools,<br>with historical cashflows, a missing month and reference differences.</p><button class="button primary" id="empty-seed">Load synthetic demo</button></div>`;
+  return `<div class="empty"><h2>Your workspace is ready.</h2><p>Load the synthetic demo to explore 72 loans across three pools,<br>with historical cashflows, a missing month and reference differences.</p><button class="button primary" id="empty-seed">Load synthetic demo</button></div>`;
 }
 async function renderOverview() {
   const o = state.overview;
@@ -475,14 +483,14 @@ async function renderIngestion() {
   const o = state.overview;
   const quarantine = await api("/quarantine");
   $("#content").innerHTML =
-    `<div class="detail-grid">${panel("Import canonical loan-month data", "Schema 1.0 · CSV · Maximum 2 MB / 10,000 rows", `<form id="upload-form" class="panel-body"><div class="controls"><label class="control-grow">Source name<input name="source" value="user-canonical" required maxlength="80"></label><label class="control-grow">CSV file<input type="file" id="csv-file" accept=".csv" required></label></div><div class="inline-actions"><button class="button primary" type="submit">Validate & import</button><a class="button secondary" href="/api/v1/template">Download example</a></div><p class="section-subtitle">The same source + file hash is a no-op. Corrected rows create new versions; invalid rows go to quarantine.</p></form>`)}${panel("Backfill & source integrity", "Recover missing observations from source records.", `<div class="panel-body"><div class="quality-row"><span>Current records</span><strong>${num(o.current_rows, 0)}</strong></div><div class="quality-row"><span>Missing / discontinuous records</span>${pill(o.gaps.length, o.gaps.length ? "amber" : "")}</div><div class="inline-actions"><button class="button secondary" id="backfill">Recover demo missing month</button><button class="button secondary" id="reimport">Reimport demo</button></div><p class="section-subtitle">Raw CSVs are stored by SHA-256. Backfill uses a known fixture; it does not interpolate unknown values.</p></div>`)}</div>${panel(
+    `<div class="detail-grid">${panel("Import canonical loan-month data", "Schema 1.0 · CSV · Maximum 2 MB / 10,000 rows", `<form id="upload-form" class="panel-body"><div class="controls"><label class="control-grow">Source name<input name="source" value="user-canonical" required maxlength="80"></label><label class="control-grow">CSV file<input type="file" id="csv-file" accept=".csv" required></label></div><div class="inline-actions"><button class="button primary" type="submit">Validate & import</button><a class="button secondary" href="/api/v1/template">Download example</a></div><p class="section-subtitle">Files already imported are skipped. Corrections retain the previous version, and invalid rows are set aside for review.</p></form>`)}${panel("Backfill & source integrity", "Recover missing observations from source records.", `<div class="panel-body"><div class="quality-row"><span>Current records</span><strong>${num(o.current_rows, 0)}</strong></div><div class="quality-row"><span>Missing / discontinuous records</span>${pill(o.gaps.length, o.gaps.length ? "amber" : "")}</div><div class="inline-actions"><button class="button secondary" id="backfill">Recover demo missing month</button><button class="button secondary" id="reimport">Reimport demo</button></div><p class="section-subtitle">Recover the missing demo month from its original source records. Missing values are not estimated.</p></div>`)}</div>${panel(
       "Quality queue",
       "Invalid rows remain available with their validation reasons.",
       table(
         ["Batch", "CSV row", "Validation finding"],
         quarantine.map(
           (r) =>
-            `<tr><td><code>${esc(r.batch_id.slice(0, 12))}</code></td><td>${r.row_number}</td><td class="wrap-cell">${esc(r.reason.slice(0, 280))}</td></tr>`,
+            `<tr><td><code>${esc(r.batch_id.slice(0, 12))}</code></td><td>${r.row_number}</td><td class="wrap-cell">${esc(validationMessage(r.reason).slice(0, 280))}</td></tr>`,
         ),
       ),
     )}${panel(
@@ -520,7 +528,7 @@ async function renderIngestion() {
       });
       await refresh();
       toast(
-        `${r.changed} changed · ${r.rejected} quarantined${r.idempotent ? " · idempotent reimport" : ""}`,
+        `${r.changed} changed · ${r.rejected} quarantined${r.idempotent ? " · already imported" : ""}`,
       );
     });
   };
@@ -540,7 +548,7 @@ async function renderIntegrations() {
   const events = await api("/events?limit=6");
   $("#content").innerHTML = `<div class="detail-grid">${panel(
     "One API. A traceable workflow.",
-    "OpenAPI contracts generated from validated request models",
+    "Import data, compare results and export analysis.",
     `<div class="panel-body">${[
       ["POST", "/api/v1/ingest", "Canonical CSV"],
       ["POST", "/api/v1/references", "External metrics"],
@@ -558,22 +566,22 @@ async function renderIntegrations() {
       )}<div class="inline-actions" style="margin-top:20px"><a class="button primary" href="/docs" target="_blank" rel="noopener">Open API reference</a><a class="button secondary" href="/openapi.json" target="_blank" rel="noopener">OpenAPI JSON</a></div></div>`,
   )}${panel(
     "Connector status",
-    "Capabilities and access requirements",
+    "Available imports and external connections",
     table(
       ["Source", "Status"],
       [
-        ["Canonical CSV / JSON", "Implemented", ""],
-        ["Freddie SFLLD tape", "Parser · fixture tested", ""],
-        ["Event consumer example", "Implemented", ""],
-        ["PolyPaths", "Contract only · needs access", "amber"],
-        ["Bloomberg / Intex", "Contract only · needs access", "amber"],
-        ["Agency MBS disclosures", "Planned mapping", "gray"],
+        ["Canonical CSV / JSON", "Available", ""],
+        ["Freddie SFLLD tape", "File import · sample tested", ""],
+        ["Event export", "Available via API", ""],
+        ["PolyPaths", "Not connected", "amber"],
+        ["Bloomberg / Intex", "Not connected", "amber"],
+        ["Agency MBS disclosures", "Not available", "gray"],
       ].map(
         ([source, status, color]) =>
           `<tr><td>${source}</td><td>${pill(status, color)}</td></tr>`,
       ),
     ),
-  )}</div>${panel("Event envelope", "Ordered events with a cursor for downstream processing.", `<div class="panel-body"><pre><code>${esc(JSON.stringify(events.events.at(-1) || { events: [] }, null, 2))}</code></pre><p class="section-subtitle">Consumers store their cursor only after processing. Event IDs allow deduplication. This is a pull integration; no webhook or message broker is connected.</p></div>`)}<div class="callout">Local API is bound to 127.0.0.1. Mutating requests require <code>X-PoolTrace-Client: local-demo</code>. Optional bearer-key mode is available for script clients. Runtime data stays in the local workspace.</div>`;
+  )}</div>${panel("Latest integration event", "Details of the most recent recorded operation.", `<div class="panel-body"><pre><code>${esc(JSON.stringify(events.events.at(-1) || { events: [] }, null, 2))}</code></pre><p class="section-subtitle">Events are available for external systems to retrieve. Automatic delivery is not configured.</p></div>`)}`;
 }
 $("#navigation")
   .querySelectorAll("button")
@@ -585,7 +593,7 @@ $("#seed-button").onclick = (e) =>
     await refresh();
     toast(
       r.idempotent
-        ? "Same file, zero new rows. Idempotence verified."
+        ? "Demo already loaded. No duplicate records added."
         : `Demo loaded: ${r.accepted} accepted · ${r.rejected} quarantined.`,
     );
   });
@@ -646,7 +654,7 @@ async function appendFreddiePanel() {
   const html = panel(
     "Freddie Mac performance adapter",
     "User-supplied SFLLD tape · Credit history, separate from MBS cashflows",
-    `<form id="freddie-form" class="panel-body"><div class="controls"><label>Release<select name="release"><option value="r47">R47 · July 2026 · 35 fields</option><option value="pre-r47">Before R47 · 32 fields</option></select></label><label class="control-grow">Pipe-delimited file<input id="freddie-file" type="file" accept=".txt,.csv" required></label><button class="button primary" type="submit">Import performance tape</button></div><p class="section-subtitle">${data.count} current performance observations. The adapter preserves reported balances and exit codes; it does not invent pool membership or infer voluntary prepayment from a balance change. No restricted observations are bundled.</p></form>${table(
+    `<form id="freddie-form" class="panel-body"><div class="controls"><label>Release<select name="release"><option value="r47">R47 · July 2026 · 35 fields</option><option value="pre-r47">Before R47 · 32 fields</option></select></label><label class="control-grow">Pipe-delimited file<input id="freddie-file" type="file" accept=".txt,.csv" required></label><button class="button primary" type="submit">Import performance tape</button></div><p class="section-subtitle">${data.count} current performance observations. Reported balances and exit codes are preserved. Pool membership and voluntary prepayment must come from a separate source.</p></form>${table(
       ["Loan", "Month", "Actual UPB", "Rate (%)", "Exit interpretation"],
       data.rows.map(
         (r) =>
@@ -668,7 +676,7 @@ async function appendFreddiePanel() {
       });
       await refresh();
       toast(
-        `${result.accepted} accepted · ${result.rejected} quarantined. No pool mapping inferred.`,
+        `${result.accepted} accepted · ${result.rejected} held for review.`,
       );
     });
   };
